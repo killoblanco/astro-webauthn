@@ -1,0 +1,30 @@
+{
+  "name": "astro-authn",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.4.1",
+    "@astrojs/tailwind": "^5.1.0",
+    "@simplewebauthn/browser": "9.0.1",
+    "@simplewebauthn/server": "9.0.1",
+    "astro": "^4.2.6",
+    "better-sqlite3": "9.3.0",
+    "drizzle-orm": "0.29.3",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@iconify-json/tabler": "1.1.104",
+    "@iconify/tailwind": "0.1.4",
+    "@simplewebauthn/types": "9.0.1",
+    "@vitejs/plugin-basic-ssl": "1.1.0",
+    "drizzle-kit": "0.20.13"
+  }
+}

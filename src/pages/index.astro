@@ -1,0 +1,157 @@
+---
+const AUTH_SECRET = "d0d7fa1d-ba60-4f6c-b9aa-9712b2e5f15f";
+
+if (Astro.request.method === "POST") {
+	const body = await Astro.request.json();
+
+	console.log({ body }, typeof body, { res: body.response });
+}
+---
+
+<style>
+	* {
+		@apply transition-all duration-300 ease-in-out;
+	}
+	dialog::backdrop {
+		@apply backdrop-blur-[2px] bg-stone-50/[0.32] dark:bg-stone-950/[0.32];
+	}
+</style>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body
+		class="bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-stone-50 p-8"
+	>
+		<main class="flex flex-col gap-8 max-w-[65ch] mx-auto">
+			<header>
+				<h1 class="text-6xl font-medium text-center">
+					Astro + Web AuthN
+				</h1>
+			</header>
+			<p>
+				This demo illustrate how to implement WebAuthN in Astro project.
+			</p>
+			<form
+				id="access-form"
+				class="border border-stone-500 rounded-lg p-4 flex flex-col gap-4"
+			>
+				<fieldset class="flex flex-col gap-2">
+					<label for="accountId" class="font-medium text-lg">
+						Account ID <span class="text-red-500">*</span>
+					</label>
+					<input
+						type="text"
+						name="accountId"
+						id="accountId"
+						class="bg-inherit border border-stone-500 rounded-lg px-4 py-2"
+						placeholder="Enter your own account ID"
+						required
+						pattern="^[.*]{6,}$"
+						autocomplete="off"
+					/>
+					<p class="text-pretty text-sm text-stone-400">
+						This fields represents the account ID of the user. It is
+						similar to the email field in a traditional login form.
+					</p>
+				</fieldset>
+				<div class="flex gap-4 items-center">
+					<button
+						type="button"
+						name="signupBtn"
+						class="px-4 py-2 w-full flex items-center justify-evenly rounded-lg text-lg font-medium bg-violet-500 hover:bg-violet-600"
+					>
+						Sign up
+						<span class="icon-[tabler--user-plus] w-6 h-6"></span>
+					</button>
+					<button
+						type="submit"
+						name="loginBtn"
+						class="px-4 py-2 w-full flex items-center justify-evenly rounded-lg text-lg font-medium bg-emerald-500 hover:bg-emerald-600"
+					>
+						Log in
+						<span class="icon-[tabler--door-enter] w-6 h-6"></span>
+					</button>
+				</div>
+			</form>
+			<div id="response"></div>
+			<dialog id="errorAlert" class="bg-transparent">
+				<div
+					class="flex flex-col gap-4 p-4 max-w-screen-sm rounded-lg bg-inherit border border-red-500 bg-stone-50 text-stone-950 dark:bg-stone-950 dark:text-stone-50"
+				>
+					<h5
+						class="inline-flex items-center gap-2 text-red-500 text-2xl font-medium"
+					>
+						<span
+							class="icon-[tabler--square-rounded-x-filled] w-8 h-8"
+						></span>
+						Error
+					</h5>
+					<p id="errorAlert-text"></p>
+					<form method="dialog" class="self-end">
+						<button
+							id="errorAlert-close"
+							class="px-2 py-1.5 flex items-center justify-evenly rounded-lg text-lg font-medium bg-red-100 hover:bg-red-200 dark:bg-red-950 dark:hover:bg-red-900"
+						>
+							Close
+							<span class="icon-[tabler--x] w-6 h-6"></span>
+						</button>
+					</form>
+				</div>
+			</dialog>
+		</main>
+	</body>
+</html>
+
+<script src="../ctrl/landing.ts"></script>
+<!-- <script define:vars={{ AUTH_SECRET }}>
+	const form = document.querySelector("form#login-form");
+
+	form?.addEventListener("submit", async (e) => {
+		e.preventDefault();
+
+		const email = form.elements.email.value;
+
+		const credential = await navigator.credentials.create({
+			publicKey: {
+				challenge: Uint32Array.from(AUTH_SECRET, (c) => c.charCodeAt(0))
+					.buffer,
+				rp: {
+					name: "Astro Web AuthN API Demo",
+					id: "k32xf1qx-4321.use2.devtunnels.ms",
+				},
+				user: {
+					id: Uint16Array.from(email, (c) => c.charCodeAt(0)),
+					name: email,
+					displayName: email,
+				},
+				pubKeyCredParams: [
+					{
+						type: "public-key",
+						alg: -7,
+					},
+				],
+				authenticatorSelection: {
+					authenticatorAttachment: "cross-platform",
+				},
+				timeout: 60000,
+				attestation: "direct",
+			},
+		});
+
+		console.log({ credential });
+
+		await fetch(globalThis.location.href, {
+			method: "POST",
+			headers: {
+				"X-Requested-With": "XMLHttpRequest",
+			},
+			body: JSON.stringify(credential),
+		});
+	});
+</script> -->
