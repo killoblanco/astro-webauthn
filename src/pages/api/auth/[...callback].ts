@@ -7,7 +7,7 @@ const catResponse = (status: ResponseInit["status"]) => new Response(
     { status }
 );
 
-export const GET: APIRoute = async ({ params, locals, url }) => {
+export const GET: APIRoute = async ({ params, url }) => {
     const { callback } = params;
 
     if (callback === 'reg-opts') {
@@ -20,14 +20,14 @@ export const GET: APIRoute = async ({ params, locals, url }) => {
 
         const options = await generateRegistrationOptions({
             rpName: 'Astro Web AuthN API Demo',
-            rpID: locals.runtime.env.SECURE_SOURCE,
+            rpID: import.meta.env.AUTH_SECURE_SOURCE,
             userID: aid,
             userName: aid,
             attestationType: 'none',
             // excludeCredentials
         });
 
-        await authRepo.setTmpNonce(locals.runtime.env.D1, aid, options.challenge);
+        await authRepo.setTmpNonce(aid, options.challenge);
 
         return new Response(JSON.stringify(options));
     }
@@ -35,11 +35,11 @@ export const GET: APIRoute = async ({ params, locals, url }) => {
     return catResponse(200);
 }
 
-export const POST: APIRoute = async ({ params, locals, request }) => {
+export const POST: APIRoute = async ({ params, request }) => {
     const { callback } = params;
 
     if (callback === 'verify-reg') {
-        const { attResp, aid } = await request.json<any>();
+        const { attResp, aid } = await request.json();
 
         if (!attResp || !aid) return catResponse(401);
         // const authUser = await getAuthUser(aid);
@@ -49,8 +49,8 @@ export const POST: APIRoute = async ({ params, locals, request }) => {
             verification = await verifyRegistrationResponse({
                 response: attResp,
                 expectedChallenge: 'authUser.challenge',
-                expectedOrigin: `https://${locals.runtime.env.SECURE_SOURCE}`,
-                expectedRPID: locals.runtime.env.SECURE_SOURCE
+                expectedOrigin: `https://${import.meta.env.AUTH_SECURE_SOURCE}`,
+                expectedRPID: import.meta.env.AUTH_SECURE_SOURCE
             })
         } catch (error) {
             return catResponse(400);
