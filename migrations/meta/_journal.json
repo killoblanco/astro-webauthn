@@ -8,6 +8,13 @@
       "when": 1706753802923,
       "tag": "0000_bent_karma",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1706760422640,
+      "tag": "0001_brief_catseye",
+      "breakpoints": true
     }
   ]
 }
