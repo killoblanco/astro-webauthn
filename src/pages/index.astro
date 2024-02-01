@@ -1,8 +1,6 @@
 ---
-const AUTH_SECRET = "d0d7fa1d-ba60-4f6c-b9aa-9712b2e5f15f";
-
 if (Astro.request.method === "POST") {
-	const body = await Astro.request.json();
+	const body = await Astro.request.json<any>();
 
 	console.log({ body }, typeof body, { res: body.response });
 }
@@ -31,7 +29,7 @@ if (Astro.request.method === "POST") {
 		<main class="flex flex-col gap-8 max-w-[65ch] mx-auto">
 			<header>
 				<h1 class="text-6xl font-medium text-center">
-					Astro + Web AuthN
+					Astro + WebAuthN
 				</h1>
 			</header>
 			<p>
@@ -109,49 +107,3 @@ if (Astro.request.method === "POST") {
 </html>
 
 <script src="../ctrl/landing.ts"></script>
-<!-- <script define:vars={{ AUTH_SECRET }}>
-	const form = document.querySelector("form#login-form");
-
-	form?.addEventListener("submit", async (e) => {
-		e.preventDefault();
-
-		const email = form.elements.email.value;
-
-		const credential = await navigator.credentials.create({
-			publicKey: {
-				challenge: Uint32Array.from(AUTH_SECRET, (c) => c.charCodeAt(0))
-					.buffer,
-				rp: {
-					name: "Astro Web AuthN API Demo",
-					id: "k32xf1qx-4321.use2.devtunnels.ms",
-				},
-				user: {
-					id: Uint16Array.from(email, (c) => c.charCodeAt(0)),
-					name: email,
-					displayName: email,
-				},
-				pubKeyCredParams: [
-					{
-						type: "public-key",
-						alg: -7,
-					},
-				],
-				authenticatorSelection: {
-					authenticatorAttachment: "cross-platform",
-				},
-				timeout: 60000,
-				attestation: "direct",
-			},
-		});
-
-		console.log({ credential });
-
-		await fetch(globalThis.location.href, {
-			method: "POST",
-			headers: {
-				"X-Requested-With": "XMLHttpRequest",
-			},
-			body: JSON.stringify(credential),
-		});
-	});
-</script> -->
