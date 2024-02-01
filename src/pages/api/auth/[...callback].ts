@@ -44,11 +44,13 @@ export const POST: APIRoute = async ({ params, request }) => {
         if (!attResp || !aid) return catResponse(401);
         // const authUser = await getAuthUser(aid);
 
+        const nonce = await authRepo.getTmpNonce(aid);
+
         let verification;
         try {
             verification = await verifyRegistrationResponse({
                 response: attResp,
-                expectedChallenge: 'authUser.challenge',
+                expectedChallenge: nonce ?? '',
                 expectedOrigin: `https://${import.meta.env.AUTH_SECURE_SOURCE}`,
                 expectedRPID: import.meta.env.AUTH_SECURE_SOURCE
             })
@@ -60,15 +62,15 @@ export const POST: APIRoute = async ({ params, request }) => {
 
         if (!verified) return catResponse(401);
 
-        // Also removes tmpChallenge
-        // await saveNewUserAuthenticator(authUser, {
-        //     credentialID: registrationInfo?.credentialID,
-        //     credentialPublicKey: registrationInfo?.credentialPublicKey,
-        //     counter: registrationInfo?.counter,
-        //     credentialDeviceType: registrationInfo?.credentialDeviceType,
-        //     credentialBackedUp: registrationInfo?.credentialBackedUp,
-        //     transports: attResp.response.transports,
-        // });
+        await authRepo.saveNewUserCredentials({
+            aid,
+            credentialID: registrationInfo?.credentialID!, // Buffer
+            credentialPublicKey: registrationInfo?.credentialPublicKey!, // Buffer
+            counter: registrationInfo?.counter!, // integer
+            credentialDeviceType: registrationInfo?.credentialDeviceType!, // string
+            credentialBackedUp: registrationInfo?.credentialBackedUp!, // boolean
+            transports: attResp.response.transports, // string[]
+        });
 
         return new Response(JSON.stringify({ verified }));
     }
