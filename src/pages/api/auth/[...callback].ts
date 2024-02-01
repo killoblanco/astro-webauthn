@@ -1,12 +1,11 @@
 import type { APIRoute } from "astro";
 import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server';
+import * as authRepo from '@/auth/repo'
 
 const catResponse = (status: ResponseInit["status"]) => new Response(
     JSON.stringify({ cat: `https://http.cat/${status}` }),
     { status }
 );
-
-const rpID = 'k32xf1qx-4321.use2.devtunnels.ms';
 
 export const GET: APIRoute = async ({ params, locals, url }) => {
     const { callback } = params;
@@ -21,19 +20,14 @@ export const GET: APIRoute = async ({ params, locals, url }) => {
 
         const options = await generateRegistrationOptions({
             rpName: 'Astro Web AuthN API Demo',
-            rpID,
+            rpID: locals.runtime.env.SECURE_SOURCE,
             userID: aid,
             userName: aid,
             attestationType: 'none',
             // excludeCredentials
         });
 
-        console.log({
-            type: typeof options.challenge,
-            challenge: options.challenge
-        })
-
-        // await setTmpChallenge(aid, options.challenge);
+        await authRepo.setTmpNonce(locals.runtime.env.D1, aid, options.challenge);
 
         return new Response(JSON.stringify(options));
     }
@@ -41,11 +35,11 @@ export const GET: APIRoute = async ({ params, locals, url }) => {
     return catResponse(200);
 }
 
-export const POST: APIRoute = async ({ params, request }) => {
+export const POST: APIRoute = async ({ params, locals, request }) => {
     const { callback } = params;
 
     if (callback === 'verify-reg') {
-        const { attResp, aid } = await request.json();
+        const { attResp, aid } = await request.json<any>();
 
         if (!attResp || !aid) return catResponse(401);
         // const authUser = await getAuthUser(aid);
@@ -55,8 +49,8 @@ export const POST: APIRoute = async ({ params, request }) => {
             verification = await verifyRegistrationResponse({
                 response: attResp,
                 expectedChallenge: 'authUser.challenge',
-                expectedOrigin: `https://${rpID}`,
-                expectedRPID: rpID
+                expectedOrigin: `https://${locals.runtime.env.SECURE_SOURCE}`,
+                expectedRPID: locals.runtime.env.SECURE_SOURCE
             })
         } catch (error) {
             return catResponse(400);
