@@ -1,6 +1,6 @@
 ---
 if (Astro.request.method === "POST") {
-	const body = await Astro.request.json<any>();
+	const body = await Astro.request.json();
 
 	console.log({ body }, typeof body, { res: body.response });
 }
