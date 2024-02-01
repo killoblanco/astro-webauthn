@@ -18,7 +18,7 @@ signupBtn.addEventListener('click', async () => {
     if (accountField.value != '') {
         const optsRes = await fetch(`/api/auth/reg-opts?aid=${accountField.value}`);
 
-        const { cat, ...opts } = await optsRes.json();
+        const { cat, ...opts } = await optsRes.json<any>();
 
         if (cat) {
             const img = document.createElement('img');
@@ -52,7 +52,7 @@ signupBtn.addEventListener('click', async () => {
             })
         });
 
-        const { cat: cat2, ...verify } = await verifyRes.json();
+        const { cat: cat2, ...verify } = await verifyRes.json<any>();
 
         if (cat2) {
             const img = document.createElement('img');
